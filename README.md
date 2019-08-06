@@ -9,10 +9,17 @@ discord.py 1.0.1以上
 
 ## クラス呼び出し
 基本的にメッセージ受け取ったときの対応を想定
+    
+    from kosen19s import Kosen
+    import discord
+    
+    client = discord.Client()
+    
+    @event.client
+    async def on_message(message):
+        kosen = Kosen(message)
 
-    kosen = Kosen(message)
-
-これをon_message内で呼び出して準備完了
+こう呼び出して準備完了
 
 ## 実際の機能
 
