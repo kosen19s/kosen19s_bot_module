@@ -35,6 +35,7 @@ class Kosen:
                              604208190233509898:[603508621585940490, 603508654674542603, 603508736342097920,
                                                  603508886133014528, 603508925479911434, 603508960900808745,
                                                  603509027049177099, 603509072716890133, 603509125380308993]}
+        self.gender = {"man" : 604212899270885386, "woman" : 604231080043872256}
 
     def get_id_list(self, mode):
         id_list = []
@@ -105,16 +106,42 @@ class Kosen:
 
     def get_id(self, mode, name):
         if mode == "m":
-            dataset = self.message.guild.members
+            return discord.utils.find(lambda m: m.name == name, self.message.guild.members)
         elif mode == "c":
-            dataset = self.message.guild.text_channels
+            return discord.utils.find(lambda m: m.name == name, self.message.guild.text_channels)
         elif mode == "r":
-            dataset = self.message.guild.roles
+            return discord.utils.find(lambda m: m.name == name, self.message.guild.roles)
         else:
             try:
                 raise ValueError("mode is m, c or r")
             except ValueError as e:
                 traceback.print_exc(e)
-        for data in dataset:
-            if data.name == name:
-                return data
+
+    def get_roles_dict(self):
+        roles_list = []
+        roles_raw_list = self.message.guild.roles
+        for roles in roles_raw_list:
+            raw_dict = {}
+            raw_dict["name"] = roles.name
+            raw_dict["id"] = roles.id
+            roles_list.append(raw_dict)
+        return roles_list
+
+    def judge_gender(self, name, id=False):
+        if id:
+            user = discord.utils.find(lambda m:m.id == name, self.message.guild.members)
+        else:
+            user = discord.utils.find(lambda m:m.name == name, self.message.guild.members)
+            if user == None:
+                try:
+                    raise ValueError('member "{0}" is not exist'.format(name))
+                except ValueError as e:
+                    traceback.print_exc(e)
+        print(user)
+        roles = user.roles
+        for role in roles:
+            if role.id in list(self.gender.values()):
+                if role.id == self.gender["man"]:
+                    return "man"
+                elif role.id == self.gender["woman"]:
+                    return "woman"
