@@ -36,7 +36,7 @@ class Kosen:
                                                  603508886133014528, 603508925479911434, 603508960900808745,
                                                  603509027049177099, 603509072716890133, 603509125380308993]}
 
-    def get_id(self, mode):
+    def get_id_list(self, mode):
         id_list = []
         dataset = []
         if mode == "c":
@@ -62,18 +62,59 @@ class Kosen:
         else:
             return True
 
-    def search_kosen_from_regions(self, region):
-        region_role = discord.utils.get(self.message.guild.roles, name=region)
-        region_id = region_role.id
+    def search_kosen_from_regions(self, region, id=False):
+        if id:
+            region_id = region
+        else:
+            region_role = discord.utils.get(self.message.guild.roles, name=region)
+            region_id = region_role.id
         region_kosen_ids = self.region_kosen[region_id]
         region_kosen_list = []
         for region_kosen_id in region_kosen_ids:
-            region_kosen_list.append(discord.utils.get(self.message.guild.roles, id=region_kosen_id))
+           region_kosen_list.append(discord.utils.get(self.message.guild.roles, id=region_kosen_id))
         return region_kosen_list
 
-    def search_region_from_kosen(self, kosen):
-        kosen_id = discord.utils.get(self.message.guild.roles, name=kosen).id
+    def search_region_from_kosen(self, kosen, id=False):
+        if id:
+            kosen_id = kosen
+        else:
+            kosen_id = discord.utils.get(self.message.guild.roles, name=kosen).id
         for region, kosen_search in self.region_kosen.items():
             if kosen_id in kosen_search:
                 region_id = region
         return discord.utils.get(self.message.guild.roles, id=region_id)
+
+    def search_member_from_role(self, role, id=False):
+        member_list = []
+        members = self.message.guild.members
+        if id:
+            for member in members:
+                mem_roles = member.roles
+                for roles in mem_roles:
+                    if str(roles.id) == role:
+                        member_list.append(member)
+                        break
+        else:
+            for member in members:
+                mem_roles = member.roles
+                for roles in mem_roles:
+                    if str(roles.name) == role:
+                        member_list.append(member)
+                        break
+        return member_list
+
+    def get_id(self, mode, name):
+        if mode == "m":
+            dataset = self.message.guild.members
+        elif mode == "c":
+            dataset = self.message.guild.text_channels
+        elif mode == "r":
+            dataset = self.message.guild.roles
+        else:
+            try:
+                raise ValueError("mode is m, c or r")
+            except ValueError as e:
+                traceback.print_exc(e)
+        for data in dataset:
+            if data.name == name:
+                return data
