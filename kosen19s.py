@@ -145,3 +145,4 @@ class Kosen:
                     return "man"
                 elif role.id == self.gender["woman"]:
                     return "woman"
+        return "undefined"
